@@ -1,0 +1,91 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { CheckCircle2, Eye, EyeOff, Leaf, AlertCircle } from "lucide-react";
+
+// Data Akun Bawaan (Hardcoded)
+const STATIC_DUMMY_USERS = [
+    { email: "alif@mahasiswa.dinus.ac.id", password: "password15936", nama: "NURALIFMAULANASYAFRUDIN", role: "Mahasiswa", nim: "15936" },
+    { email: "budi@email.com", password: "budi123", nama: "Budi Santoso", role: "Umum", nim: null }
+];
+
+export default function LoginPage() {
+    const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+
+    const handleLogin = (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+
+        // 1. Ambil data user dari localStorage (hasil register baru)
+        const localUsers = JSON.parse(localStorage.getItem("local_users") || "[]");
+
+        // 2. Gabungkan data statis dan data lokal
+        const allUsers = [...STATIC_DUMMY_USERS, ...localUsers];
+
+        // 3. Cari user yang cocok
+        const user = allUsers.find((u) => u.email === email && u.password === password);
+
+        if (user) {
+            localStorage.setItem("user_session", JSON.stringify(user));
+            router.push("/dashboard");
+        } else {
+            setError("Email atau password salah.");
+        }
+    };
+
+    return (
+        <div className="min-h-screen flex w-full font-sans">
+            {/* SISI KIRI (Tetap Sama) */}
+            <div className="hidden md:flex md:w-5/12 bg-gradient-to-b from-[#2B2317] to-[#132A1D] text-white p-12 flex-col justify-between relative overflow-hidden">
+                <Link href="/" className="flex items-center gap-2 z-10 hover:opacity-80 transition w-fit">
+                    <Leaf className="w-5 h-5 text-[#8CB954]" />
+                    <span className="font-bold text-lg tracking-wide">MyUGO</span>
+                </Link>
+                <div className="z-10 mt-12 flex-1 flex flex-col justify-center">
+                    <h1 className="text-4xl lg:text-5xl font-semibold leading-tight mb-6">Selamat datang <br /> kembali.</h1>
+                    <p className="text-sm text-gray-300 leading-relaxed mb-10 max-w-sm">Masuk untuk melanjutkan pemesanan fasilitas olahraga premium UDINUS.</p>
+                </div>
+            </div>
+
+            {/* SISI KANAN: Form Login */}
+            <div className="w-full md:w-7/12 bg-[#FDFBF5] p-8 md:p-16 flex flex-col justify-center relative overflow-hidden">
+                <div className="max-w-md w-full mx-auto relative z-10">
+                    <div className="mb-10">
+                        <h2 className="text-3xl font-bold text-[#1B3627] mb-2">Masuk Akun</h2>
+                        <p className="text-sm text-gray-500">Belum memiliki akun? <Link href="/register" className="text-[#1B3627] font-semibold hover:underline">Daftar di sini</Link></p>
+                    </div>
+
+                    {error && <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm rounded-md flex items-center gap-2"><AlertCircle className="w-4 h-4" />{error}</div>}
+
+                    <form className="space-y-5" onSubmit={handleLogin}>
+                        <div>
+                            <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Alamat Email</label>
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="nama@email.com" required className="w-full bg-[#F5F2E9] border-none rounded-md px-4 py-3 text-sm focus:ring-2 focus:ring-[#EAD0B3] outline-none text-[#1B3627]" />
+                        </div>
+
+                        <div>
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Password</label>
+                                <Link href="#" className="text-[10px] font-bold text-[#1B3627] hover:underline">Lupa Password?</Link>
+                            </div>
+                            <div className="relative flex items-center">
+                                <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required className="w-full bg-[#F5F2E9] border-none rounded-md px-4 py-3 text-sm focus:ring-2 focus:ring-[#EAD0B3] outline-none text-[#1B3627]" />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 text-gray-400 hover:text-gray-600">
+                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" className="w-full bg-[#E5C3A6] hover:bg-[#d5b090] text-[#1B3627] font-semibold py-3.5 rounded-md transition duration-200 mt-8">Masuk</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
+}

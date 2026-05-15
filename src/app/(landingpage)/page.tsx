@@ -1,9 +1,9 @@
-import Hero from "@/components/LandingPage/Hero";
-import Stats from "@/components/LandingPage/Stats";
-import Exploration from "@/components/LandingPage/Exploration";
-import Steps from "@/components/LandingPage/Steps";
-import CTA from "@/components/LandingPage/CTA";
-import Footer from "@/components/LandingPage/Footer";
+import Hero from "./components/Hero";
+import Stats from "./components/Stats";
+import Exploration from "./components/Exploration";
+import Steps from "./components/Steps";
+import CTA from "./components/CTA";
+import Footer from "./components/Footer";
 
 export default function Home() {
   return (

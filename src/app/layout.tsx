@@ -12,22 +12,23 @@ const manrope = Manrope({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Fieldbooking",
-  description: "Booking lapangan olahraga",
-};
-
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="en"
       className={`${plusJakartaSans.variable} ${manrope.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body
+        className="min-h-full flex flex-col font-sans"
+        suppressHydrationWarning
+      >
+        {children}
+      </body>
     </html>
   );
 }
