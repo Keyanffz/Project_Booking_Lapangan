@@ -15,7 +15,6 @@ export default function NavbarUser() {
     const [showNotif, setShowNotif] = useState(false);
     const [showProfile, setShowProfile] = useState(false);
 
-    // 1. Tambahkan Ref untuk masing-masing overlay
     const notifRef = useRef<HTMLDivElement>(null);
     const profileRef = useRef<HTMLDivElement>(null);
 
@@ -26,28 +25,27 @@ export default function NavbarUser() {
         const session = localStorage.getItem("user_session");
         if (session) setUserData(JSON.parse(session));
 
-        // 2. Logika untuk menutup overlay saat klik di luar
         const handleClickOutside = (event: MouseEvent) => {
-            // Tutup Notif jika klik di luar area notifRef
             if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
                 setShowNotif(false);
             }
-            // Tutup Profile jika klik di luar area profileRef
             if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
                 setShowProfile(false);
             }
         };
 
-        // Tambahkan event listener ke dokumen
         document.addEventListener("mousedown", handleClickOutside);
-
-        // Bersihkan listener saat komponen tidak lagi digunakan (unmount)
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
 
-    // Data Dummy Notifikasi
+    // REVISI: Alamat href disesuaikan (tanpa kata /user)
+    const navLinks = [
+        { name: "Booking", href: "/dashboard" },
+        { name: "Riwayat", href: "/riwayat" },
+    ];
+
     const notifications = [
         {
             id: 1,
@@ -91,12 +89,12 @@ export default function NavbarUser() {
                         <span className="font-bold text-lg tracking-wide">MyUGO</span>
                     </Link>
 
-                    {/* Nav Links - Desktop */}
+                    {/* Nav Links - Desktop (REVISI: Kondisi pathname aktif disesuaikan) */}
                     <div className="hidden md:flex items-center gap-8">
-                        <Link href="/dashboard" className={`text-sm font-medium transition-all hover:text-[#E5C3A6] ${pathname === "/dashboard" ? "text-[#E5C3A6]" : "text-gray-300"}`}>
+                        <Link href="/dashboard" className={`text-sm font-medium transition-all hover:text-[#E5C3A6] ${pathname === "/dashboard" ? "text-[#E5C3A6] border-b-2 border-[#E5C3A6] pb-1" : "text-gray-300"}`}>
                             Booking
                         </Link>
-                        <Link href="/user/riwayat" className={`text-sm font-medium transition-all hover:text-[#E5C3A6] ${pathname === "/user/riwayat" ? "text-[#E5C3A6]" : "text-gray-300"}`}>
+                        <Link href="/riwayat" className={`text-sm font-medium transition-all hover:text-[#E5C3A6] ${pathname === "/riwayat" ? "text-[#E5C3A6] border-b-2 border-[#E5C3A6] pb-1" : "text-gray-300"}`}>
                             Riwayat
                         </Link>
                     </div>
@@ -104,7 +102,7 @@ export default function NavbarUser() {
                     {/* Action Icons - Desktop */}
                     <div className="hidden md:flex items-center gap-4">
 
-                        {/* 3. Bungkus Notifikasi dengan div ref */}
+                        {/* Bell Icon */}
                         <div className="relative" ref={notifRef}>
                             <button
                                 onClick={() => { setShowNotif(!showNotif); setShowProfile(false); }}
@@ -120,7 +118,7 @@ export default function NavbarUser() {
                                         <h3 className="text-sm font-bold text-[#1B3627]">Notifikasi</h3>
                                         <button className="text-[10px] font-bold text-[#c29867] hover:underline uppercase">Tandai Dibaca</button>
                                     </div>
-                                    <div className="max-h-96 overflow-y-auto">
+                                    <div className="max-h-96 overflow-y-auto text-[#1B3627]">
                                         {notifications.map((n) => (
                                             <div key={n.id} className={`p-4 border-b border-gray-50 flex gap-3 hover:bg-gray-50 transition cursor-pointer ${!n.isRead ? "bg-blue-50/30" : ""}`}>
                                                 <div className="shrink-0 mt-1">
@@ -143,7 +141,7 @@ export default function NavbarUser() {
                             )}
                         </div>
 
-                        {/* 4. Bungkus Profil dengan div ref */}
+                        {/* Profile Circle */}
                         <div className="relative" ref={profileRef}>
                             <button
                                 onClick={() => { setShowProfile(!showProfile); setShowNotif(false); }}
@@ -195,6 +193,7 @@ export default function NavbarUser() {
 
                     </div>
 
+                    {/* Mobile Menu Button */}
                     <div className="md:hidden flex items-center gap-3">
                         <button onClick={() => setShowNotif(!showNotif)} className="text-gray-300"><Bell className="w-5 h-5" /></button>
                         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-300">
@@ -203,6 +202,29 @@ export default function NavbarUser() {
                     </div>
                 </div>
             </div>
+
+            {/* Mobile Menu Dropdown */}
+            {isMenuOpen && (
+                <div className="md:hidden bg-[#132A1D] border-t border-white/5 px-4 py-6 space-y-4">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.name}
+                            href={link.href}
+                            onClick={() => setIsMenuOpen(false)}
+                            className={`block text-sm font-medium ${pathname === link.href ? "text-[#E5C3A6]" : "text-gray-300"
+                                }`}
+                        >
+                            {link.name}
+                        </Link>
+                    ))}
+                    <div className="pt-4 border-t border-white/5 flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-[#E5C3A6] flex items-center justify-center text-[#1B3627]">
+                            <User className="w-5 h-5" />
+                        </div>
+                        <p className="text-xs font-bold uppercase">{userData?.nama || "User MyUGO"}</p>
+                    </div>
+                </div>
+            )}
         </nav>
     );
 }
