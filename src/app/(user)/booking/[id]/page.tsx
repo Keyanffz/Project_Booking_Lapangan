@@ -1,8 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-// Import komponen kalender yang sudah kita buat sebelumnya
-// Sesuaikan alamat importnya dengan lokasi file komponen kalendermu
 import ScheduleCalendar from "@/components/User/ScheduleCalendar";
 
 export default async function BookingDetailPage({
@@ -11,33 +9,34 @@ export default async function BookingDetailPage({
     params: Promise<{ id: string }>
 }) {
     const resolvedParams = await params;
-    const idLapangan = resolvedParams.id;
+    const idLapangan = parseInt(resolvedParams.id) || 1;
 
-    // Di sini nantinya kamu juga akan memanggil fungsi getDetailLapangan(idLapangan) dari API
+    const isOdd = idLapangan % 2 !== 0;
+
+    const dataLapangan = {
+        id: idLapangan,
+        nama: isOdd ? "Lapangan Futsal Internasional" : "Arena Basket Indoor B",
+        lokasi: isOdd ? "Gedung Olahraga Utama, Semarang" : "Student Center Lt. 3, Semarang",
+        harga: isOdd ? 75000 : 60000,
+        image: isOdd
+            ? "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?q=80&w=1000"
+            : "https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=1000",
+    };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-            {/* Tombol Kembali */}
-            <Link
-                href="/dashboard"
-                className="inline-flex items-center text-sm text-gray-600 hover:text-[#113222] mb-6 font-medium"
-            >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Kembali ke Dashboard
-            </Link>
+        <div className="w-full pb-20 font-sans min-h-screen bg-[#FDFBF5] text-[#1B3627]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
 
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900">
-                    Detail Lapangan #{idLapangan}
-                </h1>
-                <p className="text-gray-500 mt-2">
-                    Pilih tanggal dan jam ketersediaan di bawah ini untuk melanjutkan proses reservasi.
-                </p>
+                <Link
+                    href="/dashboard"
+                    className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-[#1B3627] mb-8 transition-colors"
+                >
+                    <ArrowLeft className="w-4 h-4 mr-2" /> Kembali ke Dashboard
+                </Link>
+
+                <ScheduleCalendar lapangan={dataLapangan} />
+
             </div>
-
-            {/* Memanggil Komponen Kalender Jadwal */}
-            <ScheduleCalendar />
-
         </div>
     );
 }
